@@ -31,16 +31,31 @@ function isNumeric(str) {
   ); // ...and ensure strings of whitespace fail
 }
 
+app.get("/api/", function (req, res) {
+  const date = new Date();
+  res.json({
+    unix: date.getTime(),
+    utc: date.toUTCString(),
+  });
+});
+
 app.get("/api/:dateTime", function (req, res) {
   if (isNumeric(req.params.dateTime)) {
     res.json({
       unix: new Date(Number(req.params.dateTime)).getTime(),
-      utc: new Date(Number(req.params.dateTime)),
+      utc: new Date(Number(req.params.dateTime)).toUTCString(),
     });
   } else {
+    const date = new Date(req.params.dateTime);
+
+    if (date.toUTCString() === "Invalid Date") {
+      res.json({
+        error: "Invalid Date",
+      });
+    }
     res.json({
-      unix: new Date(req.params.dateTime).getTime(),
-      utc: new Date(req.params.dateTime),
+      unix: date.getTime(),
+      utc: date.toUTCString(),
     });
   }
 });
